@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wrong Answer Calculator</title>
+  <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button{
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background-image: url("stickers/gradient.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      position: relative;
+    }
+     body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 0;
+    }
+    h1{
+        color: rgb(255, 255, 255);
+    }
+    .calculator {
+        align-items: center;
+      background: rgba(255, 255, 255, 0.081);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 12px;
+      display: flex;
+      gap: 1px;
+      flex-direction: column;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .input{
+      margin: 0;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.655);
+        border-radius: 10px;
+        -moz-appearance: textfield;
+        padding: 10px 20px;
+        width: 80%;
+        text-align: center;
+    }
+    input::placeholder{
+        color: #ffffffab;
+    }
+    input, select {
+      padding: 10px;
+      margin: 0px;
+      font-size: 16px;
+      width: 120px;
+    }
+    select{
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.659);
+        border-radius: 10px;
+        color: #ffffffab;
+        margin-bottom: 10px;
+    }
+    button {
+     padding: 15px 30px;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      
+      cursor: pointer;
+      transition: all 0.4s ease;
+      
+    }
+    button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+ 
+  <h1>Useless Calculator</h1>
+ 
+  <div class="calculator">
+    <input class="input" type="number" id="num1" placeholder="Number 1"><br>
+    <input class="input" type="number" id="num2" placeholder="Number 2"><br>
+    <select id="operation">
+      <option class="select" value="+">+</option>
+      <option class="select" value="-">−</option>
+      <option class="select" value="*">×</option>
+      <option class="select" value="/">÷</option>
+    </select><br>
+    <button onclick="giveWrongAnswer()">Calculate</button>
+    <div id="result">The wrong answer will appear here...</div>
+  </div>
+ 
+  <script>
+    function giveWrongAnswer() {
+      const n1 = parseFloat(document.getElementById("num1").value);
+      const n2 = parseFloat(document.getElementById("num2").value);
+      const op = document.getElementById("operation").value;
+      const resultEl = document.getElementById("result");
+ 
+      if (isNaN(n1) || isNaN(n2)) {
+        resultEl.innerText = "🤔 Please enter real numbers. Or don’t.";
+        return;
+      }
+ 
+      // Actually calculate correct result but don't use it
+      const correctResult = eval(`${n1} ${op} ${n2}`);
+ 
+      // Create a wrong result (add some chaos)
+      const wrongResult = correctResult + Math.floor(Math.random() * 100 - 50);
+ 
+      const funnyResponses = [
+        `The answer is... definitely ${wrongResult} (trust me bro).`,
+        `Math is hard. So here's ${wrongResult}.`,
+        `I rolled a dice. You got ${wrongResult}.`,
+        `According to my cat: ${wrongResult}`,
+        `🧠 Overthinking... Output: ${wrongResult}`,
+        `You entered ${n1} ${op} ${n2}... so here’s ${wrongResult}. Good luck!`
+      ];
+ 
+      const message = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
+      resultEl.innerText = message;
+    }
+  </script>
+ 
+</body>
+</html>
+ 
+ 

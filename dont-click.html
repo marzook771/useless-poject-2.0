@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <title>Don't Click the Button</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background-image: url("stickers/gradient.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 0;
+    }
+
+    h1 {
+      position: absolute;
+      top: 30px;
+      font-size: 2em;
+      color: #fff;
+      z-index: 1;
+    }
+
+    #annoying-button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      z-index: 2;
+    }
+
+    #annoying-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .popup {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      padding: 30px;
+      max-width: 600px;
+      min-height: 150px;
+      animation: fadeIn 0.5s ease forwards;
+      z-index: 999;
+    }
+
+    .popup img {
+      width: 70px;
+      height: 70px;
+      margin-right: 15px;
+      border-radius: 10px;
+    }
+
+    .popup p {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.6;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .fade-out {
+      animation: fadeOut 0.3s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1></h1>
+  <button id="annoying-button">Click Me</button>
+
+  <!-- Meme Sounds -->
+  <audio id="hover-sound" src="https://www.myinstants.com/media/sounds/movie_1_bruh.mp3"></audio>
+  <audio id="click-sound" src="https://www.myinstants.com/media/sounds/darthvader_noooo.mp3"></audio>
+
+  <script>
+    const button = document.getElementById('annoying-button');
+    const hoverSound = document.getElementById("hover-sound");
+    const clickSound = document.getElementById("click-sound");
+    const padding = 100;
+    let popupDiv = null;
+
+    const funnyTexts = [
+      "Nope! 😂", "Try Again! 🏃‍♂️", "Too slow! 🐢", "Missed me! 🫢",
+      "Catch me if you can! 🏃💨", "You wish! 😜", "Denied! 🚫", "Haha! 🙈",
+      "Almost! 😅", "Loser! 😎", "Can't touch this! 🕺", "Oops! 🍌", 
+      "Getting warmer... 🔥", "Keep dreaming! 🌈", "Bruh 😐", "😂 LMAO",
+      "No chance! ❌", "Faster next time! 🐇", "You're cute trying 😘"
+    ];
+
+    const popupMessages = [
+      {
+        gif: "https://media.tenor.com/T9QJ2c9DPz8AAAAM/funny-sticker.gif",
+        text: "എന്താടാ നീ ചെയ്യുന്നത്? 😂"
+      },
+      {
+        gif: "https://tenor.com/view/haha-lol-comedy-funny-thamasha-para-gif-2600765840663759687",
+        text: "ഇത് ക്ലിക്കാക്കില്ലെന്ന് പറഞ്ഞേ?"
+      },
+      {
+        gif: "https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif",
+        text: "നിനക്ക് ഇതൊന്നും പറ്റില്ല! 🐒"
+      },
+      {
+        gif: "https://media.tenor.com/NWAmhx0S4p8AAAAM/sticker.gif",
+        text: "വേഗം കൂടെ! 🐇"
+      },
+      {
+        gif: "https://media.tenor.com/GnUayBMnZecAAAAM/yeehaw-meme.gif",
+        text: "ഇവിടെ വന്നു ചവിട്ടാമോ എന്ന് വിചാരിച്ചോ? 😎"
+      }
+    ];
+
+    function getSafePosition() {
+      const popupZone = {
+        x: window.innerWidth / 2 - 200,
+        y: window.innerHeight / 2 - 100,
+        width: 400,
+        height: 200
+      };
+
+      let x, y, attempts = 0;
+      do {
+        x = Math.random() * (window.innerWidth - padding);
+        y = Math.random() * (window.innerHeight - padding);
+        attempts++;
+      } while (
+        x > popupZone.x &&
+        x < popupZone.x + popupZone.width &&
+        y > popupZone.y &&
+        y < popupZone.y + popupZone.height &&
+        attempts < 100
+      );
+
+      return { x, y };
+    }
+
+    function moveButton() {
+      const { x, y } = getSafePosition();
+      button.style.left = `${x}px`;
+      button.style.top = `${y}px`;
+
+      const randomText = funnyTexts[Math.floor(Math.random() * funnyTexts.length)];
+      button.textContent = randomText;
+
+      showFunnyPopup();
+
+      // Spin sometimes
+      if (Math.random() < 0.3) {
+        button.style.transform = "rotate(360deg)";
+        setTimeout(() => button.style.transform = "rotate(0deg)", 1000);
+      }
+
+      // Fake hack popup occasionally
+      if (Math.random() < 0.2) {
+        showFakeLoadingPopup();
+      }
+    }
+
+    function showFunnyPopup() {
+      if (popupDiv) {
+        popupDiv.remove();
+        popupDiv = null;
+      }
+
+      const popup = document.createElement("div");
+      popup.className = "popup";
+
+      const msg = popupMessages[Math.floor(Math.random() * popupMessages.length)];
+
+      const img = document.createElement("img");
+      img.src = msg.gif;
+
+      const text = document.createElement("p");
+      text.textContent = msg.text;
+
+      popup.appendChild(img);
+      popup.appendChild(text);
+      document.body.appendChild(popup);
+
+      popupDiv = popup;
+
+      setTimeout(() => {
+        popup.classList.add("fade-out");
+        popup.addEventListener("animationend", () => popup.remove());
+        popupDiv = null;
+      }, 2500);
+    }
+
+    function showFakeLoadingPopup() {
+      const popup = document.createElement("div");
+      popup.className = "popup";
+
+      const text = document.createElement("p");
+      text.textContent = "💻 System Hacked... Uploading MEMES 😂";
+
+      popup.appendChild(text);
+      document.body.appendChild(popup);
+
+      setTimeout(() => {
+        popup.classList.add("fade-out");
+        popup.addEventListener("animationend", () => popup.remove());
+      }, 2000);
+    }
+
+    button.addEventListener('mouseenter', () => {
+      hoverSound.currentTime = 0;
+      hoverSound.play();
+      moveButton();
+    });
+
+    button.addEventListener('click', () => {
+      clickSound.currentTime = 0;
+      clickSound.play();
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      alert("You weren't supposed to do that!");
+    });
+
+    moveButton(); // Initial run
+  </script>
+</body>
+</html>

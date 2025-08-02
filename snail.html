@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snail Racer 0.0001X</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-image: url("stickers/gradient.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      position: relative;
+      padding: 2rem;
+      color: white;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 0;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    .race-track {
+      position: relative;
+      width: 90%;
+      height: 130px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.242);
+      backdrop-filter: blur(5px);
+      border: 2px dashed #777;
+      border-radius: 10px;
+    }
+    .snail {
+      position: absolute;
+      top: 20px;
+      width: 50px;
+      height: 50px;
+      font-size: 2rem;
+      padding-bottom: 20px;
+    }
+    .snail2 {
+      top: 60px;
+    }
+    .bet-buttons {
+      margin-top: 20px;
+       display: flex;
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.655);
+        border-radius: 10px;
+        -moz-appearance: textfield;
+        padding: 10px 20px;
+        width: 80%;
+       
+        text-align: center;
+        color: white;
+    }
+    .bet-info {
+      margin-top: 20px;
+      font-style: italic;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+ 
+<h1>🐌 Snail Racer 0.0001X</h1>
+<p>Pick your snail and… wait for eternity 🕒</p>
+ 
+<div class="race-track">
+  <div class="snail" id="snail1">🐌</div>
+  <div class="snail snail2" id="snail2">🐌</div>
+</div>
+ 
+<div class="bet-buttons">
+  <button onclick="placeBet('Snail 1')">Bet on Snail 1</button>
+  <button onclick="placeBet('Snail 2')">Bet on Snail 2</button>
+</div>
+ 
+<div class="bet-info" id="betInfo">No bet placed yet.</div>
+ 
+<script>
+  let pos1 = 0;
+  let pos2 = 0;
+  let bet = null;
+ 
+  function placeBet(snail) {
+    bet = snail;
+    document.getElementById('betInfo').innerText = `You bet on ${snail}. Enjoy the wait!`;
+  }
+ 
+  function moveSnails() {
+    pos1 += Math.random() < 0.5 ? 1 : 0; // randomly move or not
+    pos2 += Math.random() < 0.5 ? 1 : 0;
+ 
+    document.getElementById('snail1').style.left = pos1 + 'px';
+    document.getElementById('snail2').style.left = pos2 + 'px';
+ 
+    if (pos1 >= 800 || pos2 >= 800) {
+      clearInterval(raceInterval);
+      const winner = pos1 > pos2 ? 'Snail 1' : 'Snail 2';
+      if (bet) {
+        alert(`${winner} wins! ${bet === winner ? 'You win!' : 'You lose!'}`);
+      } else {
+        alert(`${winner} wins! You didn’t bet at all.`);
+      }
+    }
+  }
